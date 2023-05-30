@@ -1,0 +1,124 @@
+{
+	"name": "Data_flow_Example_01",
+	"properties": {
+		"description": "this is to be used for the data manipulation of the data and transformation all over.\n1. this data flow debug convert the graphical rep. data to spark cluster. And runs as a spark code.\n2. All the types of data set are allowed which can be used in ADF.\n3.  this is be used for the little data and where the logic are easy and simple.\n4. this is valid for the valid data.\n5. \n\n",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Customer_File_Dataset_for_DATAFLOW",
+						"type": "DatasetReference"
+					},
+					"name": "InputFileSource01",
+					"description": "this is our starting process "
+				},
+				{
+					"dataset": {
+						"referenceName": "CustomerAddress_Dataset_for_DATAFLOW",
+						"type": "DatasetReference"
+					},
+					"name": "CustomerAddressData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DATA_Flow_Dataset_for_sink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectFewColumn"
+				},
+				{
+					"name": "customerGreaterThan10"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "surrogateKey1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as short,",
+				"          NameStyle as boolean,",
+				"          Title as string,",
+				"          FirstName as string,",
+				"          MiddleName as string,",
+				"          LastName as string,",
+				"          Suffix as string,",
+				"          CompanyName as string,",
+				"          SalesPerson as string,",
+				"          EmailAddress as string,",
+				"          Phone as string,",
+				"          PasswordHash as string,",
+				"          PasswordSalt as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as date 'dd/MM/yyyy'",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'File_Name') ~> InputFileSource01",
+				"source(output(",
+				"          Column_1 as string,",
+				"          Column_2 as string,",
+				"          Column_3 as string,",
+				"          Column_4 as string,",
+				"          Column_5 as string,",
+				"          Column_6 as string,",
+				"          Column_7 as string,",
+				"          Column_8 as string,",
+				"          Column_9 as string,",
+				"          Column_10 as string,",
+				"          Column_11 as string,",
+				"          Column_12 as string,",
+				"          Column_13 as string,",
+				"          Column_14 as string,",
+				"          Column_15 as string,",
+				"          Column_16 as string,",
+				"          Column_17 as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> CustomerAddressData",
+				"InputFileSource01 select(mapColumn(",
+				"          CustomerID,",
+				"          NameStyle,",
+				"          Title_Discription = Title,",
+				"          FirstName,",
+				"          MiddleName,",
+				"          LastName,",
+				"          Suffix,",
+				"          CompanyName,",
+				"          SalesPerson,",
+				"          EmailAddress,",
+				"          Phone,",
+				"          rowguid,",
+				"          ModifiedDate,",
+				"          File_Name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectFewColumn",
+				"SelectFewColumn filter(CustomerID>10) ~> customerGreaterThan10",
+				"customerGreaterThan10 derive(super_customerID = CustomerID*10) ~> derivedColumn1",
+				"derivedColumn1 keyGenerate(output(NEWkey as long),",
+				"     startAt: 100001L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

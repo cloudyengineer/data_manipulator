@@ -1,0 +1,152 @@
+{
+	"name": "SCD_Ty02_DATAflow01",
+	"properties": {
+		"description": "IN this we are doing the same thing as done in the SCD01\nDATAflow Explaination at : 1:04",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SCD_EMP_Dataset_01_TY01",
+						"type": "DatasetReference"
+					},
+					"name": "FilesData"
+				},
+				{
+					"dataset": {
+						"referenceName": "SCD_TY02_Dataset_Sink",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SCD_TY02_Dataset_Sink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "SCD_TY02_Dataset_Sink",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "selectDBdata"
+				},
+				{
+					"name": "lookup1",
+					"description": "This is a kind of left outer join"
+				},
+				{
+					"name": "onlyExistRows"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as short,",
+				"          emp_name as string,",
+				"          { emp_address} as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> FilesData",
+				"source(output(",
+				"          id as integer,",
+				"          emp_name as string,",
+				"          emp_address as string,",
+				"          Active_Flag as integer",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"FilesData derive(Active_Flag = 1) ~> derivedColumn1",
+				"source2 select(mapColumn(",
+				"          Db_id = id,",
+				"          DB_emp_name = emp_name,",
+				"          Db_emp_address = emp_address,",
+				"          Db_Active_Flag = Active_Flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectDBdata",
+				"FilesData, selectDBdata lookup(id == Db_id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 filter(!isNull(Db_id)) ~> onlyExistRows",
+				"onlyExistRows select(mapColumn(",
+				"          Db_id,",
+				"          Db_Active_Flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(Db_Active_Flag = 0) ~> derivedColumn2",
+				"derivedColumn2 alterRow(updateIf(1==1)) ~> alterRow1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          emp_name as string,",
+				"          emp_address as string,",
+				"          Active_Flag as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          id,",
+				"          emp_name,",
+				"          emp_address = { emp_address},",
+				"          Active_Flag",
+				"     )) ~> sink1",
+				"alterRow1 sink(allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          emp_name as string,",
+				"          emp_address as string,",
+				"          Active_Flag as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          id = Db_id,",
+				"          Active_Flag = Db_Active_Flag",
+				"     )) ~> sink2"
+			]
+		}
+	}
+}

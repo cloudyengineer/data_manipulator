@@ -1,0 +1,26 @@
+{
+	"name": "Stroage_trigger",
+	"properties": {
+		"description": "this is the storage trigger for the different use",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Incremental_Pipeline_Example_01",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/landing/blobs/customer",
+			"blobPathEndsWith": ".txt",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/24fa5a83-7894-4db4-8c5e-6b18d579afa8/resourceGroups/faisal_re_source_03/providers/Microsoft.Storage/storageAccounts/faisalstorage03adls",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

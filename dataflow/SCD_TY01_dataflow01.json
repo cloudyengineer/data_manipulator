@@ -1,0 +1,60 @@
+{
+	"name": "SCD_TY01_dataflow01",
+	"properties": {
+		"description": "This is to implement the scd ty01\n1. import projection will fetch the data and get us the schema.",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SCD_EMP_Dataset_01_TY01",
+						"type": "DatasetReference"
+					},
+					"name": "SCDTY01SOURCE"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SCD_TY01_EMP_Dataset_Sink",
+						"type": "DatasetReference"
+					},
+					"name": "SCDTY01sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "alterRow1",
+					"description": "ITwill go row by row"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as short,",
+				"          emp_name as string,",
+				"          { emp_address} as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SCDTY01SOURCE",
+				"SCDTY01SOURCE alterRow(upsertIf(1==1)) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as integer,",
+				"          emp_name as string,",
+				"          emp_address as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> SCDTY01sink"
+			]
+		}
+	}
+}

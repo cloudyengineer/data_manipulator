@@ -1,0 +1,9 @@
+{
+	"name": "faisaladf02",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "bf7c9c53-4679-4201-ba2f-d399cd7e0034",
+		"tenantId": "ae51117d-2838-4220-9037-5fac50e65f85"
+	}
+}

@@ -1,0 +1,31 @@
+{
+	"name": "Example_pipeline_01",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"description": "this is for the second use case for the tumbling type trigger",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "temp",
+					"value": "adfdfudfdfhuffs"
+				}
+			}
+		],
+		"parameters": {
+			"pass_Table": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"temp": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-05-14T15:33:45Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

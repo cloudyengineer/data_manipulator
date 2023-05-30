@@ -1,0 +1,25 @@
+{
+	"name": "Every_minute_schedule_basedtirgger",
+	"properties": {
+		"description": "This trigger will run the pipeline every min.",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Incremental_Pipeline_Example_01",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 1,
+				"startTime": "2023-05-14T11:23:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"name": "trigger1",
+	"properties": {
+		"description": "In this Trigger will be using the parameter and the variable aswell \nTUMBILING WINDOW TYPE 2",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipeline": {
+			"pipelineReference": {
+				"referenceName": "Example_pipeline_01",
+				"type": "PipelineReference"
+			},
+			"parameters": {
+				"pass_Table": "fsfss"
+			}
+		},
+		"type": "TumblingWindowTrigger",
+		"typeProperties": {
+			"frequency": "Minute",
+			"interval": 15,
+			"startTime": "2023-05-14T02:26:00Z",
+			"delay": "00:00:00",
+			"maxConcurrency": 50,
+			"retryPolicy": {
+				"intervalInSeconds": 30
+			},
+			"dependsOn": []
+		}
+	}
+}
